@@ -35,14 +35,13 @@ def get_error_table(dataset, feature_columns, y, test_size=0.3, max_depth=3) -> 
     return error_table
 
 def get_lookup_table(error_table, penalty_factor):
-    lookup_table = {"penalty_factor": penalty_factor}
+    lookup_table = {}
     for key, value in error_table.items():
         lookup_table[key] = value - penalty_factor * len(key)
     return lookup_table
 
 def print_results(error_table, lookup_table, dataset_name):
     print("Results for dataset: ", dataset_name)
-    print(f"Penalty factor of {lookup_table['penalty_factor']}")
     print(f"Lookup wine table:{lookup_table}")
     print(f"Error table wine: {error_table}")
     print(f"Length : {len(lookup_table)}")
@@ -58,20 +57,27 @@ def print_results(error_table, lookup_table, dataset_name):
 def to_binary_representation(tuples, length):
     binary_rep = "0" * length
     for i in tuples:
-        print(tuples)
-        print(i)
         binary_rep = binary_rep[:i] + "1" + binary_rep[i+1:]
     return binary_rep
 
-def export_to_csv(table, name, column_amount):
-    # set table indexes to binary representation
-    binary_table = {}
-    for key, value in table.items():
-        binary_key = to_binary_representation(key, column_amount)
-        binary_table[binary_key] = value
-    df = pd.DataFrame(binary_table)
-    df.to_csv(f"{name}.csv", index=False)
-    print(f"Exported to {name}.csv")
+def get_complete_table(error_table, length_columns, penalty_factor):
+    complete_table = {}
+    for key, value in error_table.items():
+        complete_table[key] = [to_binary_representation(key, length_columns), value, value - penalty_factor * len(key),
+        ]
+    return complete_table
+
+def export_to_csv(complete_table, dataset_name):
+    df = pd.DataFrame.from_dict(
+    complete_table,
+    orient='index',
+    columns=['Binary representation', 'Error', 'Lookup value']
+)
+    # give name to index "features selected"
+    df.index.name = "Features selected"
+    df.to_csv(f'{dataset_name}.csv', index=True)
+    print(f"Complete table exported to {dataset_name}.csv")
+    
     
 if __name__ == "__main__":
     print(to_binary_representation((1, 2), 5))
