@@ -90,8 +90,8 @@ def genetic_algorithm(lookup_dict, features_amount, population_size=1000, genera
     # Save the last population to a CSV file, with all the scores and the amount of individuals
     population_df = pd.DataFrame(population)
     population_df['Fitness'] = [fitness(ind, lookup_dict) for ind in population]
-    population_df.to_csv("outputs/final_population_sga.csv", index=False)
-    print("Final population saved to outputs/final_population_sga.csv")
+    population_df.to_csv("outputs/final_population.csv", index=False)
+    print("Final population saved to outputs/final_population.csv")
     end = time.time()
     print(f"Time taken: {end - begin} seconds for {generations} generations of {population_size} individuals")
     return best_individual, best_fitness
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     
     lookup_dict = dict(zip(
     lookup_table['Binary representation'],
-    lookup_table['Lookup value']
+    lookup_table['Error']
     ))
 
     best_individual, best_fitness = genetic_algorithm(lookup_dict, features_amount=13)

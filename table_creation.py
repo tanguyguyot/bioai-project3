@@ -35,26 +35,6 @@ def get_error_table(dataset, feature_columns, y, test_size=0.3, max_depth=3) -> 
             error_table[col_indexes] = error
     return error_table
 
-def get_lookup_table(error_table, penalty_factor):
-    lookup_table = {}
-    for key, value in error_table.items():
-        lookup_table[key] = value - penalty_factor * len(key)
-    return lookup_table
-
-def print_results(error_table, lookup_table, dataset_name):
-    print("Results for dataset: ", dataset_name)
-    print(f"Lookup wine table:{lookup_table}")
-    print(f"Error table wine: {error_table}")
-    print(f"Length : {len(lookup_table)}")
-
-    # Get the 10 max values and key of error table
-    max_values = sorted(error_table.values(), reverse=True)[:10]
-    max_keys = sorted(error_table, key=error_table.get, reverse=True)[:10]
-    print(f"Max values glass (error table): {max_values}")
-    print(f"Max keys glass (error table): {max_keys}")
-    print(f"Max values glass (lookup table): {sorted(lookup_table.values(), reverse=True)[:10]}")
-    print(f"Max keys glass (lookup table): {sorted(lookup_table, key=lookup_table.get, reverse=True)[:10]}")
-    
 def to_binary_representation(tuples, length) -> str:
     binary_rep = "0" * length
     for i in tuples:
