@@ -32,6 +32,14 @@ def crossover(parent1: str, parent2: str) -> tuple:
     child2 = parent2[:index] + parent1[index:]
     return child1, child2
 
+def pareto_optimality(individual1: str, individual2: str, lookup_dict: dict) -> bool:
+    """
+    Check if individual1 is Pareto optimal compared to individual2.
+    """
+    fitness1 = fitness(individual1, lookup_dict)
+    fitness2 = fitness(individual2, lookup_dict)
+    return fitness1 < fitness2
+
 def fitness(bitstring: str, lookup_dict: dict) -> float:
     """
     Calculate the fitness of an individual based on the error table.
@@ -101,10 +109,13 @@ if __name__ == "__main__":
     lookup_table = pd.read_csv("outputs/wine_complete_table.csv", dtype={'Binary representation': str})
     lookup_table['Binary representation'] = lookup_table['Binary representation'].astype("string")
     
+    params = zip(lookup_table['Error'], lookup_table['Lookup value'])
     lookup_dict = dict(zip(
     lookup_table['Binary representation'],
-    lookup_table['Error']
-    ))
+    params)
+    )
+    
+    print(lookup_dict)
 
-    best_individual, best_fitness = genetic_algorithm(lookup_dict, features_amount=13)
+    #best_individual, best_fitness = genetic_algorithm(lookup_dict, features_amount=13)
     
