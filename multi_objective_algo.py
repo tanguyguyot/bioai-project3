@@ -21,7 +21,7 @@ def function1(bitstring: str, lookup_dict: dict) -> float:
     fitness_value = lookup_dict.get(bitstring, np.inf).get("Error", np.inf)
     return fitness_value
 
-def function2(bitstring: str, lookup_dict: dict) -> float:
+def function2(bitstring: str) -> float:
     """
     Get the number of features of the bitstring
     """
@@ -95,7 +95,7 @@ def crowding_distance(front: list, objectives: list) -> list:
     
     for i in range(num_objectives):
         # Sort the individuals in the front by the i-th objective
-        sorted_indices = sorted(front, key=lambda x: objectives[x][i])
+        sorted_indices = sorted(range(len(front)), key=lambda x: objectives[front[x]][i])
         
         # Set the distance of the first and last individual to infinity
         distance[sorted_indices[0]] = float("inf")
@@ -103,9 +103,9 @@ def crowding_distance(front: list, objectives: list) -> list:
         
         # Calculate the distance for each individual in the front
         for j in range(1, len(sorted_indices) - 1):
-            # 
-            if objectives[sorted_indices[j]][i] != objectives[sorted_indices[0]][i]:
-                distance[sorted_indices[j]] += (objectives[sorted_indices[j + 1]][i] - objectives[sorted_indices[j - 1]][i]) / (objectives[sorted_indices[-1]][i] - objectives[sorted_indices[0]][i])
+            max_value = objectives[front[sorted_indices[-1]]][i]
+            min_value = objectives[front[sorted_indices[0]]][i]
+            distance[sorted_indices[j]] += (objectives[front[sorted_indices[j + 1]]][i] - objectives[front[sorted_indices[j - 1]]][i]) / (max_value - min_value)
     return distance
 
 def tournament_selection(population: list, objectives: list, ranks: list, fronts: list) -> str:
@@ -151,9 +151,8 @@ def crossover(parent1: str, parent2: str) -> tuple:
     """
     Perform crossover between two parents to create a child.
     """
-    index = random.randint(1, len(parent1) - 1)
-    child1 = parent1[:index] + parent2[index:]
-    child2 = parent2[:index] + parent1[index:]
+    child1 = ''.join(random.choice([a, b]) for a, b in zip(parent1, parent2))
+    child2 = ''.join(random.choice([a, b]) for a, b in zip(parent1, parent2))
     return child1, child2
 
 def selection(objectives: list, fronts: list, amount: int) -> list:
@@ -166,16 +165,16 @@ def selection(objectives: list, fronts: list, amount: int) -> list:
         else:
             distances = crowding_distance(fronts[current_rank], objectives)
             sorted_indices = sorted(range(len(fronts[current_rank])), key=lambda x: distances[x], reverse=True)
-            selected.extend(sorted_indices[:amount - len(selected)])
+            selected.extend([fronts[current_rank][i] for i in sorted_indices[:amount - len(selected)]])
             break
     return selected
 
-def genetic_algorithm(lookup_dict, features_amount, population_size=100, generations=100, mutation_rate=0.01) -> list:
+def genetic_algorithm(name: str, lookup_dict: dict, features_amount: int, population_size: int = 100, generations: int = 100, mutation_rate: float = 0.01) -> list:
     population = [generate_individual(features_amount) for _ in range(population_size)]
-    objectives = [(function1(individual, lookup_dict), function2(individual, lookup_dict)) for individual in population]
+    objectives = [(function1(individual, lookup_dict), function2(individual)) for individual in population]
     ranks, fronts = fast_non_dominated_sort(objectives)
     
-    for _ in tqdm(range(generations)):
+    for generation in tqdm(range(generations)):
         new_population = population.copy()
         assert len(new_population) == population_size
         for _ in range(len(population) // 2):
@@ -187,19 +186,20 @@ def genetic_algorithm(lookup_dict, features_amount, population_size=100, generat
             new_population.append(child1)
             new_population.append(child2)
         # Evaluate the new population
-        objectives = [(function1(individual, lookup_dict), function2(individual, lookup_dict)) for individual in new_population]
+        objectives = [(function1(individual, lookup_dict), function2(individual)) for individual in new_population]
         # non-dominated sorting on intermediate population : parents + children
         ranks, fronts = fast_non_dominated_sort(objectives)
         # Select the next generation
         selected = selection(objectives, fronts, population_size)
         # Create the new population
         population = [new_population[i] for i in selected]
+        print(f"Gen {generation}: {len(set(population))} uniques")
     # Get last fronts
-    objectives = [(function1(individual, lookup_dict), function2(individual, lookup_dict)) for individual in population]
+    objectives = [(function1(individual, lookup_dict), function2(individual)) for individual in population]
     ranks, fronts = fast_non_dominated_sort(objectives)
     
     # Saving in a file
-    with open("outputs/nsga2_output.txt", "w") as f:
+    with open(f"outputs/{name}_nsga2_output.txt", "w") as f:
         for i, individual in enumerate(population):
             f.write(f"Individual {i}: {individual}, Rank: {ranks[i]}, Front: {fronts[ranks[i]]}, Objectives: {objectives[i]}\n")
         f.write(f"Population size: {len(population)}\n")
@@ -220,11 +220,11 @@ def plot_population(front: list, population: list, lookup_dict: dict, name: str)
     """
     plt.close()
     f1_pop = [function1(individual, lookup_dict) for individual in population]
-    f2_pop = [function2(individual, lookup_dict) for individual in population]
+    f2_pop = [function2(individual) for individual in population]
     plt.scatter(f1_pop, f2_pop, label="Population")
     
     f1 = [function1(individual, lookup_dict) for individual in front]
-    f2 = [function2(individual, lookup_dict) for individual in front]
+    f2 = [function2(individual) for individual in front]
     plt.scatter(f1, f2, color="red")
 
     plt.xlabel("Function 1")
@@ -241,7 +241,7 @@ def plot_generations(generations: list, lookup_dict: dict, name: str) -> None:
     plt.close()
     for i, generation in enumerate(generations):
         f1 = [function1(individual, lookup_dict) for individual in generation]
-        f2 = [function2(individual, lookup_dict) for individual in generation]
+        f2 = [function2(individual) for individual in generation]
         plt.scatter(f1, f2, label=f"Generation {i}")
     
     plt.xlabel("Function 1")
@@ -259,7 +259,7 @@ def plot_fronts(population: list, fronts: list, lookup_dict: dict) -> None:
     plt.close()
     for i, front in enumerate(fronts):
         f1 = [function1(population[individual], lookup_dict) for individual in front]
-        f2 = [function2(population[individual], lookup_dict) for individual in front]
+        f2 = [function2(population[individual]) for individual in front]
         plt.scatter(f1, f2, label=f"Front {i}")
     
     plt.xlabel("Function 1")
@@ -272,15 +272,25 @@ def plot_fronts(population: list, fronts: list, lookup_dict: dict) -> None:
 
 if __name__ == "__main__":
     # Dataset features amount : glass = 9, wine = 13, magic = 10
+    wine_table = csv_to_dict("outputs/wine_complete_table.csv")
+    glass_table = csv_to_dict("outputs/glass_complete_table.csv")
+    magic_table = csv_to_dict("outputs/magic_complete_table.csv")
     
-    table = csv_to_dict("outputs/wine_complete_table.csv")
-    features_amount = len(next(iter(table.keys())))
+    wine_features_amount = len(next(iter(wine_table.keys())))
+    glass_features_amount = len(next(iter(glass_table.keys())))
+    magic_features_amount = len(next(iter(magic_table.keys())))
     
-    ranks, fronts, population = genetic_algorithm(table, features_amount, population_size=100, generations=50,  mutation_rate=0.01)
+    # wine
+    ranks, fronts, population = genetic_algorithm("wine", wine_table, wine_features_amount, population_size=50, generations=50,  mutation_rate=0.05)
     
-    print("length of pop: ", len(population))
-    plot_fronts(population, fronts, table)
-    
+    plot_fronts(population, fronts, wine_table)
     pareto_front = [population[i] for i in fronts[0]]
-    plot_population(pareto_front, population, table, "wine")
+    plot_population(pareto_front, population, wine_table, "wine")
     
+    # glass
+    ranks, fronts, population = genetic_algorithm("glass", glass_table, glass_features_amount, population_size=50, generations=50,  mutation_rate=0.05)
+    plot_fronts(population, fronts, glass_table)
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, glass_table, "glass")
+    
+    #magic
