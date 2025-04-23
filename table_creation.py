@@ -3,16 +3,11 @@ import pandas as pd
 from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
 from sklearn.model_selection import train_test_split # Import train_test_split function
 from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
-from sklearn import tree
 from itertools import combinations
 from tqdm import tqdm
-from multiprocessing import Pool
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import numpy as np
-from matplotlib import cm
-from matplotlib.colorbar import ColorbarBase
-from matplotlib.colors import Normalize
 
 def get_table(dataset, feature_columns, y, penalty_factor=0.01, test_size=0.3, max_depth=3) -> dict:
     error_table = {}
