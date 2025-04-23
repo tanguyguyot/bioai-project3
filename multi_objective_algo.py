@@ -1,6 +1,5 @@
 import random
 import numpy as np
-import pandas as pd
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from table_creation import csv_to_dict
@@ -96,13 +95,15 @@ def crowding_distance(front: list, objectives: list) -> list:
     
     for i in range(num_objectives):
         # Sort the individuals in the front by the i-th objective
-        sorted_indices = sorted(range(len(front)), key=lambda x: objectives[x][i])
+        sorted_indices = sorted(front, key=lambda x: objectives[x][i])
+        
         # Set the distance of the first and last individual to infinity
         distance[sorted_indices[0]] = float("inf")
         distance[sorted_indices[-1]] = float("inf")
         
         # Calculate the distance for each individual in the front
         for j in range(1, len(sorted_indices) - 1):
+            # 
             if objectives[sorted_indices[j]][i] != objectives[sorted_indices[0]][i]:
                 distance[sorted_indices[j]] += (objectives[sorted_indices[j + 1]][i] - objectives[sorted_indices[j - 1]][i]) / (objectives[sorted_indices[-1]][i] - objectives[sorted_indices[0]][i])
     return distance
@@ -173,40 +174,59 @@ def genetic_algorithm(lookup_dict, features_amount, population_size=100, generat
     population = [generate_individual(features_amount) for _ in range(population_size)]
     objectives = [(function1(individual, lookup_dict), function2(individual, lookup_dict)) for individual in population]
     ranks, fronts = fast_non_dominated_sort(objectives)
-    saved_generations = []
     
     for _ in tqdm(range(generations)):
-        parent1 = tournament_selection(population, objectives, ranks, fronts)
-        parent2 = tournament_selection(population, objectives, ranks, fronts)
-        child1, child2 = crossover(parent1, parent2)
-        child1 = mutate(child1, mutation_rate)
-        child2 = mutate(child2, mutation_rate)
-        population.append(child1)
-        population.append(child2)
+        new_population = population.copy()
+        assert len(new_population) == population_size
+        for _ in range(len(population) // 2):
+            parent1 = tournament_selection(population, objectives, ranks, fronts)
+            parent2 = tournament_selection(population, objectives, ranks, fronts)
+            child1, child2 = crossover(parent1, parent2)
+            child1 = mutate(child1, mutation_rate)
+            child2 = mutate(child2, mutation_rate)
+            new_population.append(child1)
+            new_population.append(child2)
+        # Evaluate the new population
+        objectives = [(function1(individual, lookup_dict), function2(individual, lookup_dict)) for individual in new_population]
         # non-dominated sorting on intermediate population : parents + children
         ranks, fronts = fast_non_dominated_sort(objectives)
         # Select the next generation
         selected = selection(objectives, fronts, population_size)
         # Create the new population
-        population = [population[i] for i in selected]
-        # Saving the generation
-        saved_generations.append(population)
-    # Return the best individuals
-    best_individuals = []
-    for i in range(len(population)):
-        if ranks[i] == 0:
-            best_individuals.append(population[i])
-    return best_individuals
+        population = [new_population[i] for i in selected]
+    # Get last fronts
+    objectives = [(function1(individual, lookup_dict), function2(individual, lookup_dict)) for individual in population]
+    ranks, fronts = fast_non_dominated_sort(objectives)
+    
+    # Saving in a file
+    with open("outputs/nsga2_output.txt", "w") as f:
+        for i, individual in enumerate(population):
+            f.write(f"Individual {i}: {individual}, Rank: {ranks[i]}, Front: {fronts[ranks[i]]}, Objectives: {objectives[i]}\n")
+        f.write(f"Population size: {len(population)}\n")
+        f.write(f"Fronts: {fronts}\n")
+        f.write(f"Ranks: {ranks}\n")
+        f.close()
+    
+    # diagnostic
+    unique = set(population)
+    print(f"Nombre d'individus uniques à la fin : {len(unique)}")
+    print(f"Nombre de fronts : {len(fronts)}")
+    print(f"Taille du premier front : {len(fronts[0])}")
+    return ranks, fronts, population
 
-def plot_population(population: list, lookup_dict: dict, name: str) -> None:
+def plot_population(front: list, population: list, lookup_dict: dict, name: str) -> None:
     """
     Plot the population in the objective space.
     """
     plt.close()
-    f1 = [function1(individual, lookup_dict) for individual in population]
-    f2 = [function2(individual, lookup_dict) for individual in population]
-    plt.scatter(f1, f2)
+    f1_pop = [function1(individual, lookup_dict) for individual in population]
+    f2_pop = [function2(individual, lookup_dict) for individual in population]
+    plt.scatter(f1_pop, f2_pop, label="Population")
     
+    f1 = [function1(individual, lookup_dict) for individual in front]
+    f2 = [function2(individual, lookup_dict) for individual in front]
+    plt.scatter(f1, f2, color="red")
+
     plt.xlabel("Function 1")
     plt.ylabel("Function 2")
     plt.title("Population in Objective Space")
@@ -256,7 +276,11 @@ if __name__ == "__main__":
     table = csv_to_dict("outputs/wine_complete_table.csv")
     features_amount = len(next(iter(table.keys())))
     
-    pareto_front = genetic_algorithm(table, features_amount, population_size=100, generations=100,  mutation_rate=0.01)
+    ranks, fronts, population = genetic_algorithm(table, features_amount, population_size=100, generations=50,  mutation_rate=0.01)
     
-    # Plot the population
-    plot_population(pareto_front, table, "wine")
+    print("length of pop: ", len(population))
+    plot_fronts(population, fronts, table)
+    
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, table, "wine")
+    
