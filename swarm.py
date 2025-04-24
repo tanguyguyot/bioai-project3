@@ -39,15 +39,17 @@ def get_velocity(particle: Particle, inertia: float, b: float, c: float, global_
     Calculate the velocity of a particle.
     """
     R = random.uniform(0, 1)
-    return inertia * particle.velocity + b * R * (particle.best_position - particle.position) + c * R * (global_best - particle.position)
+    velocity = inertia * particle.velocity + b * R * (particle.best_position - particle.position) + c * R * (global_best - particle.position)
+    return velocity
 
-def find_best_individual(population: list, lookup_table: dict) -> Particle:
+def find_best_individual(population: list, lookup_table: dict) -> tuple:
     """
     Find the best individual amongst the population
     """
     best_individual = min(population, key=lambda p: p.fitness)
+    best_position = best_individual.position
     best_fitness = best_individual.fitness
-    return best_individual, best_fitness
+    return (best_position, best_fitness)
 
 def update_particle(particle: Particle) -> Particle:
     """
@@ -87,7 +89,7 @@ def particle_swarm_optimization(lookup_table: dict, num_particles: int, num_iter
             # Update velocity
             particle.velocity = get_velocity(particle, inertia, b, c, global_best_position)
             # Update position based on probabilities
-            particle = update_particle(particle, lookup_table)
+            particle = update_particle(particle)
         print("Current best fitness: ", global_best_fitness)
     print("Final best fitness: ", global_best_fitness)
     print("Final best position: ", global_best_position)
@@ -99,4 +101,4 @@ if __name__ == '__main__':
     wine_lookup_dict = csv_to_dict("outputs/wine_complete_table.csv")
     magic_lookup_dict = csv_to_dict("outputs/magic_complete_table.csv")
     
-    best_position, best_fitness = particle_swarm_optimization(wine_lookup_dict, num_particles=100, num_iterations=1000, inertia=0.5, b=1.5, c=1.5)
+    best_position, best_fitness = particle_swarm_optimization(wine_lookup_dict, num_particles=10, num_iterations=100, inertia=0.5, b=1.5, c=1.5)
