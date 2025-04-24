@@ -199,7 +199,7 @@ def genetic_algorithm(name: str, lookup_dict: dict, features_amount: int, popula
     ranks, fronts = fast_non_dominated_sort(objectives)
     
     # Saving in a file
-    with open(f"outputs/{name}_nsga2_output.txt", "w") as f:
+    with open(f"outputs/plots/nsga2/{name}_nsga2_output.txt", "w") as f:
         for i, individual in enumerate(population):
             f.write(f"Individual {i}: {individual}, Rank: {ranks[i]}, Front: {fronts[ranks[i]]}, Objectives: {objectives[i]}\n")
         f.write(f"Population size: {len(population)}\n")
@@ -231,7 +231,7 @@ def plot_population(front: list, population: list, lookup_dict: dict, name: str)
     plt.ylabel("Function 2")
     plt.title("Population in Objective Space")
     plt.show()
-    plt.savefig(f"outputs/{name}_nsga2_final_population.png")
+    plt.savefig(f"outputs/plots/nsga2/{name}_nsga2_final_population.png")
     plt.close()
     
 def plot_generations(generations: list, lookup_dict: dict, name: str) -> None:
@@ -249,10 +249,10 @@ def plot_generations(generations: list, lookup_dict: dict, name: str) -> None:
     plt.title("Generations in Objective Space")
     plt.legend()
     plt.show()
-    plt.savefig(f"outputs/{name}_nsga2_generations.png")
+    plt.savefig(f"outputs/plots/nsga2/{name}_nsga2_generations.png")
     plt.close()
 
-def plot_fronts(population: list, fronts: list, lookup_dict: dict) -> None:
+def plot_fronts(population: list, fronts: list, lookup_dict: dict, name: str) -> None:
     """
     Plot the fronts of the population.
     """
@@ -267,7 +267,7 @@ def plot_fronts(population: list, fronts: list, lookup_dict: dict) -> None:
     plt.title("Pareto Fronts")
     plt.legend()
     plt.show()
-    plt.savefig("outputs/pareto_fronts.png")
+    plt.savefig(f"outputs/plots/nsga2/{name}_pareto_fronts.png")
     plt.close()
 
 if __name__ == "__main__":
@@ -283,14 +283,18 @@ if __name__ == "__main__":
     # wine
     ranks, fronts, population = genetic_algorithm("wine", wine_table, wine_features_amount, population_size=50, generations=50,  mutation_rate=0.05)
     
-    plot_fronts(population, fronts, wine_table)
+    plot_fronts(population, fronts, wine_table, "wine")
     pareto_front = [population[i] for i in fronts[0]]
     plot_population(pareto_front, population, wine_table, "wine")
     
     # glass
     ranks, fronts, population = genetic_algorithm("glass", glass_table, glass_features_amount, population_size=50, generations=50,  mutation_rate=0.05)
-    plot_fronts(population, fronts, glass_table)
+    plot_fronts(population, fronts, glass_table, "glass")
     pareto_front = [population[i] for i in fronts[0]]
     plot_population(pareto_front, population, glass_table, "glass")
     
     #magic
+    ranks, fronts, population = genetic_algorithm("magic", magic_table, magic_features_amount, population_size=50, generations=50,  mutation_rate=0.05)
+    plot_fronts(population, fronts, magic_table, "magic")
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, magic_table, "magic")
