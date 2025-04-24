@@ -3,6 +3,7 @@
 import random
 import numpy as np
 from table_creation import csv_to_dict
+from tqdm import tqdm
 
 class Particle:
     def __init__(self, feature_length: int, lookup_table: dict):
@@ -71,7 +72,7 @@ def particle_swarm_optimization(lookup_table: dict, num_particles: int, num_iter
     
     global_best_position, global_best_fitness = find_best_individual(particles, lookup_table)
     
-    for _ in range(num_iterations):
+    for _ in tqdm(range(num_iterations)):
         for particle in particles:
             # Evaluate fitness of particle's current position
             particle.fitness = fitness(particle.position, lookup_table)
