@@ -1,6 +1,6 @@
 # Load libraries
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, DecisionTreeClassifier
 from sklearn.model_selection import train_test_split # Import train_test_split function
 from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
 from itertools import combinations
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import numpy as np
 
-def get_table(dataset, feature_columns, y, penalty_factor=0.01, test_size=0.3) -> dict:
+def get_table(dataset, feature_columns, y, penalty_factor=0.01, test_size=0.3, cl="rf", max_depth=3) -> dict:
     error_table = {}
     for i in tqdm(range(1, len(feature_columns) + 1)):
         for selected_columns in combinations(feature_columns, i):
@@ -20,8 +20,10 @@ def get_table(dataset, feature_columns, y, penalty_factor=0.01, test_size=0.3) -
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=1)
             
             # Create a clf, specified by the step 6
-            clf = RandomForestClassifier(n_estimators=30, criterion='gini', max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, max_features="sqrt", n_jobs=4)
-            
+            if cl == "rf":
+                clf = RandomForestClassifier(n_estimators=30, criterion='gini', max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, max_features="sqrt", n_jobs=4)
+            else:
+                clf = DecisionTreeClassifier(max_depth=max_depth, random_state=1)
             # Train clf
             clf = clf.fit(X_train, y_train)
             

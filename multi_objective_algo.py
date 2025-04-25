@@ -169,7 +169,8 @@ def selection(objectives: list, fronts: list, amount: int) -> list:
             break
     return selected
 
-def genetic_algorithm(name: str, lookup_dict: dict, features_amount: int, population_size: int = 100, generations: int = 100, mutation_rate: float = 0.01) -> list:
+def genetic_algorithm(name: str, lookup_dict: dict, population_size: int = 100, generations: int = 100, mutation_rate: float = 0.01) -> list:
+    features_amount = len(next(iter(lookup_dict.keys())))
     population = [generate_individual(features_amount) for _ in range(population_size)]
     objectives = [(function1(individual, lookup_dict), function2(individual)) for individual in population]
     ranks, fronts = fast_non_dominated_sort(objectives)
@@ -193,7 +194,6 @@ def genetic_algorithm(name: str, lookup_dict: dict, features_amount: int, popula
         selected = selection(objectives, fronts, population_size)
         # Create the new population
         population = [new_population[i] for i in selected]
-        print(f"Gen {generation}: {len(set(population))} uniques")
     # Get last fronts
     objectives = [(function1(individual, lookup_dict), function2(individual)) for individual in population]
     ranks, fronts = fast_non_dominated_sort(objectives)
@@ -275,26 +275,36 @@ if __name__ == "__main__":
     wine_table = csv_to_dict("outputs/wine_complete_table.csv")
     glass_table = csv_to_dict("outputs/glass_complete_table.csv")
     magic_table = csv_to_dict("outputs/magic_complete_table.csv")
-    
-    wine_features_amount = len(next(iter(wine_table.keys())))
-    glass_features_amount = len(next(iter(glass_table.keys())))
-    magic_features_amount = len(next(iter(magic_table.keys())))
+    heart_lookup_dict = csv_to_dict("outputs/heart_diseases_complete_table.csv")
+    zoo_lookup_dict = csv_to_dict("outputs/zoo_complete_table.csv")
     
     # wine
-    ranks, fronts, population = genetic_algorithm("wine", wine_table, wine_features_amount, population_size=50, generations=50,  mutation_rate=0.05)
+    ranks, fronts, population = genetic_algorithm("wine", wine_table, population_size=50, generations=50,  mutation_rate=0.05)
     
     plot_fronts(population, fronts, wine_table, "wine")
     pareto_front = [population[i] for i in fronts[0]]
     plot_population(pareto_front, population, wine_table, "wine")
     
     # glass
-    ranks, fronts, population = genetic_algorithm("glass", glass_table, glass_features_amount, population_size=50, generations=50,  mutation_rate=0.05)
+    ranks, fronts, population = genetic_algorithm("glass", glass_table, population_size=50, generations=50,  mutation_rate=0.05)
     plot_fronts(population, fronts, glass_table, "glass")
     pareto_front = [population[i] for i in fronts[0]]
     plot_population(pareto_front, population, glass_table, "glass")
     
     #magic
-    ranks, fronts, population = genetic_algorithm("magic", magic_table, magic_features_amount, population_size=50, generations=50,  mutation_rate=0.05)
+    ranks, fronts, population = genetic_algorithm("magic", magic_table, population_size=50, generations=50,  mutation_rate=0.05)
     plot_fronts(population, fronts, magic_table, "magic")
     pareto_front = [population[i] for i in fronts[0]]
     plot_population(pareto_front, population, magic_table, "magic")
+    
+    # heart
+    ranks, fronts, population = genetic_algorithm("heart", heart_lookup_dict, population_size=50, generations=50,  mutation_rate=0.05)
+    plot_fronts(population, fronts, heart_lookup_dict, "heart")
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, heart_lookup_dict, "heart")
+    
+    # zoo
+    ranks, fronts, population = genetic_algorithm("zoo", zoo_lookup_dict, population_size=50, generations=50,  mutation_rate=0.05)
+    plot_fronts(population, fronts, zoo_lookup_dict, "zoo")
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, zoo_lookup_dict, "zoo")

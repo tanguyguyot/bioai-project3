@@ -65,7 +65,8 @@ def elite_selection(population: list, lookup_dict: dict, amount: int) -> list:
     remaining_amount = len(population) - amount
     return elite_population + remaining_population[:remaining_amount]
 
-def genetic_algorithm(lookup_dict, features_amount, population_size=1000, generations=1000, tournament_size=6, mutation_rate=0.01, elite_frac=0.2) -> tuple:
+def genetic_algorithm(lookup_dict, population_size=1000, generations=1000, tournament_size=6, mutation_rate=0.01, elite_frac=0.2) -> tuple:
+    features_amount = len(next(iter(lookup_dict.keys())))
     population = [generate_individual(features_amount) for _ in range(population_size)]
 
     begin = time.time()
@@ -91,8 +92,8 @@ def genetic_algorithm(lookup_dict, features_amount, population_size=1000, genera
     # Save the last population to a CSV file, with all the scores and the amount of individuals
     population_df = pd.DataFrame(population)
     population_df['Fitness'] = [fitness(ind, lookup_dict) for ind in population]
-    population_df.to_csv("outputs/final_population_sga.csv", index=False)
-    print("Final population saved to outputs/final_population_sga.csv")
+    #population_df.to_csv("outputs/final_population_sga.csv", index=False)
+    #print("Final population saved to outputs/final_population_sga.csv")
     end = time.time()
     print(f"Time taken: {end - begin} seconds for {generations} generations of {population_size} individuals")
     return best_individual, best_fitness
@@ -102,12 +103,18 @@ if __name__ == "__main__":
     glass_lookup_dict = csv_to_dict("outputs/glass_complete_table.csv")
     wine_lookup_dict = csv_to_dict("outputs/wine_complete_table.csv")
     magic_lookup_dict = csv_to_dict("outputs/magic_complete_table.csv")
+    heart_lookup_dict = csv_to_dict("outputs/heart_diseases_complete_table.csv")
+    zoo_lookup_dict = csv_to_dict("outputs/zoo_complete_table.csv")
 
-    glass_best_individual, glass_best_fitness = genetic_algorithm(glass_lookup_dict, features_amount=9)
-    wine_best_individual, wine_best_fitness = genetic_algorithm(wine_lookup_dict, features_amount=13)
-    magic_best_individual, magic_best_fitness = genetic_algorithm(magic_lookup_dict, features_amount=10)
+    glass_best_individual, glass_best_fitness = genetic_algorithm(glass_lookup_dict)
+    wine_best_individual, wine_best_fitness = genetic_algorithm(wine_lookup_dict)
+    magic_best_individual, magic_best_fitness = genetic_algorithm(magic_lookup_dict)
+    heart_best_individual, heart_best_fitness = genetic_algorithm(heart_lookup_dict)
+    zoo_best_individual, zoo_best_fitness = genetic_algorithm(zoo_lookup_dict)
     print(f"Best individual for glass: {glass_best_individual}, Fitness: {glass_best_fitness}")
     print(f"Best individual for wine: {wine_best_individual}, Fitness: {wine_best_fitness}")
     print(f"Best individual for magic: {magic_best_individual}, Fitness: {magic_best_fitness}")
+    print(f"Best individual for heart: {heart_best_individual}, Fitness: {heart_best_fitness}")
+    print(f"Best individual for zoo: {zoo_best_individual}, Fitness: {zoo_best_fitness}")
     
     
