@@ -9,7 +9,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import numpy as np
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 
 def evaluate_combination(args):
     selected_columns, feature_columns, dataset, y, penalty_factor, test_size, cl, max_depth = args
@@ -21,7 +21,7 @@ def evaluate_combination(args):
         clf = RandomForestClassifier(
             n_estimators=30, max_depth=None,
             min_samples_split=2, max_features="sqrt",
-            random_state=456, n_jobs=-1
+            random_state=456, n_jobs=1
         )
     else:
         clf = DecisionTreeClassifier(max_depth=max_depth, random_state=1)
