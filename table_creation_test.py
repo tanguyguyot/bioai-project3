@@ -1,6 +1,7 @@
 # Load libraries
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier, DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split #
 from sklearn import metrics 
 from itertools import combinations
