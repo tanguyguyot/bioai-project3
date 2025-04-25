@@ -21,8 +21,10 @@ def get_table(dataset, feature_columns, y, penalty_factor=0.01, test_size=0.3, c
             
             # Create a clf, specified by the step 6
             if cl == "rf":
-                clf = RandomForestClassifier(n_estimators=30, criterion='gini', max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, max_features="sqrt", n_jobs=4)
+                print("Random Forest selected")
+                clf = RandomForestClassifier(n_estimators=30, criterion='gini', max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, max_features="sqrt", random_state=456, n_jobs=-1)
             else:
+                print("Decision Tree selected")
                 clf = DecisionTreeClassifier(max_depth=max_depth, random_state=1)
             # Train clf
             clf = clf.fit(X_train, y_train)
