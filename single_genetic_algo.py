@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import time
-from table_creation import csv_to_dict
+from table_creation_test import csv_to_dict
 
 def generate_individual(length: int) -> str:
     """

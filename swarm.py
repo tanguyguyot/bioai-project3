@@ -1,8 +1,7 @@
 # PARTICLE SWARM OPTIMIZATION (binary)
 
-import random
 import numpy as np
-from table_creation import csv_to_dict
+from table_creation_test import csv_to_dict
 from tqdm import tqdm
 
 class Particle:

@@ -2,7 +2,7 @@ import random
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from table_creation import csv_to_dict
+from table_creation_test import csv_to_dict
 
 # NSGA-II
 def generate_individual(length: int) -> str:
