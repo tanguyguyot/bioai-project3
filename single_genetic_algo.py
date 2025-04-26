@@ -65,7 +65,7 @@ def elite_selection(population: list, lookup_dict: dict, amount: int) -> list:
     remaining_amount = len(population) - amount
     return elite_population + remaining_population[:remaining_amount]
 
-def genetic_algorithm(lookup_dict, population_size=1000, generations=1000, tournament_size=6, mutation_rate=0.01, elite_frac=0.2) -> tuple:
+def genetic_algorithm(lookup_dict, population_size=100, generations=500, tournament_size=6, mutation_rate=0.01, elite_frac=0.2, verbose=False) -> tuple:
     features_amount = len(next(iter(lookup_dict.keys())))
     population = [generate_individual(features_amount) for _ in range(population_size)]
 
@@ -74,7 +74,7 @@ def genetic_algorithm(lookup_dict, population_size=1000, generations=1000, tourn
     print(f"Initial best fitness: {best_fitness}")
     # Generation loop
     for generation in tqdm(range(generations), desc="Gen"):
-        if generation % 100 == 0:
+        if generation % 100 == 0 and verbose:
             tqdm.write(f"Generation {generation} ; best = {best_fitness}")
         children = []
         for _ in range(population_size // 2):
@@ -89,11 +89,11 @@ def genetic_algorithm(lookup_dict, population_size=1000, generations=1000, tourn
     best_individual = min(population, key=lambda x: fitness(x, lookup_dict))
     best_fitness = fitness(best_individual, lookup_dict)
     print(f"Best individual: {best_individual}, Fitness: {best_fitness}")
-    # Save the last population to a CSV file, with all the scores and the amount of individuals
-    population_df = pd.DataFrame(population)
-    population_df['Fitness'] = [fitness(ind, lookup_dict) for ind in population]
-    #population_df.to_csv("outputs/final_population_sga.csv", index=False)
-    #print("Final population saved to outputs/final_population_sga.csv")
+    # # Save the last population to a CSV file, with all the scores and the amount of individuals
+    # population_df = pd.DataFrame(population)
+    # population_df['Fitness'] = [fitness(ind, lookup_dict) for ind in population]
+    # #population_df.to_csv("outputs/final_population_sga.csv", index=False)
+    # #print("Final population saved to outputs/final_population_sga.csv")
     end = time.time()
     print(f"Time taken: {end - begin} seconds for {generations} generations of {population_size} individuals")
     return best_individual, best_fitness

@@ -63,7 +63,7 @@ def update_particle(particle: Particle) -> Particle:
     particle.position = (rand < probs).astype(int)
     return particle
     
-def particle_swarm_optimization(lookup_table: dict, num_particles: int, num_iterations: int, b: float, c: float) -> str:
+def particle_swarm_optimization(lookup_table: dict, num_particles: int = 50, num_iterations: int = 50, b: float = 1.5, c: float = 1.5, verbose=False) -> str:
     """
     Perform Particle Swarm Optimization.
     """
@@ -96,7 +96,7 @@ def particle_swarm_optimization(lookup_table: dict, num_particles: int, num_iter
             particle.velocity = get_velocity(particle, inertia, b, c, global_best_position)
             # 5) update position
             update_particle(particle)
-        if generation % 10 == 0:
+        if generation % 10 == 0 and verbose:
             print(f"Gen {generation}, best fitness = {global_best_fitness}")
     print("Final best fitness: ", global_best_fitness)
     print("Final best position: ", global_best_position)
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     # Dataset features amount : glass = 9, wine = 13, magic = 10
     # glass_lookup_dict = csv_to_dict("outputs/glass_complete_table.csv")
     # wine_lookup_dict = csv_to_dict("outputs/wine_complete_table.csv")
-    # magic_lookup_dict = csv_to_dict("outputs/magic_complete_table.csv")
+    # magic_lookup_dict = csv_to_dict("outputs/magi c_complete_table.csv")
     
     # zoo_lookup_dict = csv_to_dict("outputs/zoo_complete_table.csv")
     # heart_lookup_dict = csv_to_dict("outputs/heart_diseases_complete_table.csv")
