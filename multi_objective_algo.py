@@ -277,6 +277,7 @@ if __name__ == "__main__":
     magic_table = csv_to_dict("outputs/magic_complete_table.csv")
     heart_lookup_dict = csv_to_dict("outputs/heart_diseases_complete_table.csv")
     zoo_lookup_dict = csv_to_dict("outputs/zoo_complete_table.csv")
+    letters_lookup_dict = csv_to_dict("outputs/letters_complete_table.csv")
     
     # wine
     ranks, fronts, population = genetic_algorithm("wine", wine_table, population_size=50, generations=50,  mutation_rate=0.05)
@@ -304,7 +305,13 @@ if __name__ == "__main__":
     plot_population(pareto_front, population, heart_lookup_dict, "heart")
     
     # zoo
-    ranks, fronts, population = genetic_algorithm("zoo", zoo_lookup_dict, population_size=50, generations=50,  mutation_rate=0.05)
+    ranks, fronts, population = genetic_algorithm("zoo", zoo_lookup_dict, population_size=100, generations=100,  mutation_rate=0.05)
     plot_fronts(population, fronts, zoo_lookup_dict, "zoo")
     pareto_front = [population[i] for i in fronts[0]]
     plot_population(pareto_front, population, zoo_lookup_dict, "zoo")
+    
+    # letters
+    ranks, fronts, population = genetic_algorithm("letters", letters_lookup_dict, population_size=500, generations=500,  mutation_rate=0.05)
+    plot_fronts(population, fronts, letters_lookup_dict, "letters")
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, letters_lookup_dict, "letters")

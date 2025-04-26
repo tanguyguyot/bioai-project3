@@ -109,6 +109,7 @@ if __name__ == '__main__':
     
     zoo_lookup_dict = csv_to_dict("outputs/zoo_complete_table.csv")
     heart_lookup_dict = csv_to_dict("outputs/heart_diseases_complete_table.csv")
+    letters_lookup_dict = csv_to_dict("outputs/letters_complete_table.csv")
     
     # Test datasets
     wine_best_position, wine_best_fitness = particle_swarm_optimization(wine_lookup_dict, num_particles=10, num_iterations=100, b=1.5, c=1.5)
@@ -116,9 +117,11 @@ if __name__ == '__main__':
     magic_best_position, magic_best_fitness = particle_swarm_optimization(magic_lookup_dict, num_particles=10, num_iterations=100, b=1.5, c=1.5)
     zoo_best_position, zoo_best_fitness = particle_swarm_optimization(zoo_lookup_dict, num_particles=10, num_iterations=100, b=1.5, c=1.5)
     heart_best_position, heart_best_fitness = particle_swarm_optimization(heart_lookup_dict, num_particles=10, num_iterations=100, b=1.5, c=1.5)
+    letters_best_position, letters_best_fitness = particle_swarm_optimization(letters_lookup_dict, num_particles=100, num_iterations=1000, b=1.5, c=1.5)
     
     print("Best position for wine dataset: ", wine_best_position, " with fitness: ", wine_best_fitness)
     print("Best position for glass dataset: ", glass_best_position, " with fitness: ", glass_best_fitness)
     print("Best position for magic dataset: ", magic_best_position, " with fitness: ", magic_best_fitness)
     print("Best position for zoo dataset: ", zoo_best_position, " with fitness: ", zoo_best_fitness)
     print("Best position for heart dataset: ", heart_best_position, " with fitness: ", heart_best_fitness)
+    print("Best position for letters dataset: ", letters_best_position, " with fitness: ", letters_best_fitness)
