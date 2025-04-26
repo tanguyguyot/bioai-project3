@@ -15,13 +15,18 @@ def evaluate_combination(args):
     selected_columns, feature_columns, dataset, y, penalty_factor, test_size, cl, max_depth = args
     X = dataset[list(selected_columns)]
     col_indexes = tuple([feature_columns.index(col) for col in selected_columns])
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=1)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=123)
     
     if cl == "rf":
         clf = RandomForestClassifier(
-            n_estimators=30, max_depth=None,
-            min_samples_split=2, max_features="sqrt",
-            random_state=456, n_jobs=1
+            n_estimators=30, 
+            max_depth=None,
+            min_samples_split=2, 
+            max_features=None,
+            min_impurity_decrease=0.0,
+            criterion="gini",
+            random_state=456, 
+            n_jobs=1
         )
     else:
         clf = DecisionTreeClassifier(max_depth=max_depth, random_state=1)
@@ -79,6 +84,8 @@ def change_penalty(table: dict, new_penalty: float) -> dict:
         table[key]["Penalty factor"] = new_penalty
         table[key]["Lookup value"] = value["Error"] + len(value["Features selected"]) * new_penalty
     return table
+
+
 
 def to_binary_representation(tuples, length) -> str:
     """
