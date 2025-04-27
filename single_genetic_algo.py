@@ -95,8 +95,9 @@ def genetic_algorithm(lookup_dict, population_size=100, generations=500, tournam
     # #population_df.to_csv("outputs/final_population_sga.csv", index=False)
     # #print("Final population saved to outputs/final_population_sga.csv")
     end = time.time()
-    print(f"Time taken: {end - begin} seconds for {generations} generations of {population_size} individuals")
-    return best_individual, best_fitness
+    if verbose: 
+        print(f"Time taken: {end - begin} seconds for {generations} generations of {population_size} individuals")
+    return (best_individual, best_fitness)
 
 if __name__ == "__main__":
     # Dataset features amount : glass = 9, wine = 13, magic = 10

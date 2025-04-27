@@ -169,13 +169,13 @@ def selection(objectives: list, fronts: list, amount: int) -> list:
             break
     return selected
 
-def genetic_algorithm(name: str, lookup_dict: dict, population_size: int = 100, generations: int = 100, mutation_rate: float = 0.01, save=False) -> list:
+def genetic_algorithm(name: str, lookup_dict: dict, population_size: int = 100, generations: int = 100, mutation_rate: float = 0.01, save=False, verbose=False) -> list:
     features_amount = len(next(iter(lookup_dict.keys())))
     population = [generate_individual(features_amount) for _ in range(population_size)]
     objectives = [(function1(individual, lookup_dict), function2(individual)) for individual in population]
     ranks, fronts = fast_non_dominated_sort(objectives)
     
-    for generation in tqdm(range(generations)):
+    for _ in tqdm(range(generations)):
         new_population = population.copy()
         assert len(new_population) == population_size
         for _ in range(len(population) // 2):
@@ -209,10 +209,11 @@ def genetic_algorithm(name: str, lookup_dict: dict, population_size: int = 100, 
             f.close()
     
     # diagnostic
-    unique = set(population)
-    print(f"Nombre d'individus uniques à la fin : {len(unique)}")
-    print(f"Nombre de fronts : {len(fronts)}")
-    print(f"Taille du premier front : {len(fronts[0])}")
+    if verbose:
+        unique = set(population)
+        print(f"Nombre d'individus uniques à la fin : {len(unique)}")
+        print(f"Nombre de fronts : {len(fronts)}")
+        print(f"Taille du premier front : {len(fronts[0])}")
     return ranks, fronts, population
 
 def plot_population(front: list, population: list, lookup_dict: dict, name: str) -> None:

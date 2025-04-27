@@ -22,14 +22,14 @@ def evaluate_combination(args):
             n_estimators=30, 
             max_depth=None,
             min_samples_split=2, 
-            max_features=None,
+            max_features="sqrt",
             min_impurity_decrease=0.0,
             criterion="gini",
             random_state=456, 
             n_jobs=1
         )
     else:
-        clf = DecisionTreeClassifier(max_depth=max_depth, random_state=1)
+        clf = DecisionTreeClassifier(max_depth=max_depth, random_state=456)
 
     clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
@@ -85,8 +85,6 @@ def change_penalty(table: dict, new_penalty: float) -> dict:
         table[key]["Lookup value"] = value["Error"] + len(value["Features selected"]) * new_penalty
     return table
 
-
-
 def to_binary_representation(tuples, length) -> str:
     """
     Convert a tuple of indexes to a binary representation
@@ -100,26 +98,25 @@ def is_local_minimum(bitstring: str, table: dict, lookup: False) -> bool:
     """
     Check if the bitstring is a local minimum in the error table.
     """
-    length_columns = bitstring.count("1")
     # Get the error of the current bitstring
-    current_error = table[bitstring]["Error"]
     if lookup:
-        current_error = table[bitstring]["Lookup value"]
-    
-    # Check all neighbors
-    for i in range(length_columns):
-        neighbor = list(bitstring)
-        neighbor[i] = "1" if neighbor[i] == "0" else "0"
-        neighbor = "".join(neighbor)
+        bitstring_error = table[bitstring]["Lookup value"]
+    else:
+        bitstring_error = table[bitstring]["Error"]
         
-        # If any neighbor has a lower error, return False
-        if lookup:
-            if table[neighbor]["Lookup value"] < current_error:
-                return False
+    # Check all neighbors
+    neighbors = []
+    for i in range(len(bitstring)):
+        if bitstring[i] == "1":
+            neighbors.append(bitstring[:i] + "0" + bitstring[i+1:])
         else:
-            if table[neighbor]["Error"] < current_error:
-                return False
-    return True
+            neighbors.append(bitstring[:i] + "1" + bitstring[i+1:])
+    if lookup:
+        neighbors_fitnesses = [table[neighbor]["Lookup value"] for neighbor in neighbors]
+    else:
+        neighbors_fitnesses = [table[neighbor]["Error"] for neighbor in neighbors]
+    # If any neighbor has a lower error, return False
+    return min(neighbors_fitnesses) >= bitstring_error
 
 def get_local_minimums(table: dict, lookup: False) -> list:
     """
@@ -136,6 +133,7 @@ def get_local_minimums(table: dict, lookup: False) -> list:
                 local_minimums.append((bitstring, int(bitstring, 2), table[bitstring]["Error"]))
     # Sort the local minimums by error : global minimum is the first one
     local_minimums.sort(key=lambda x: x[2])
+    print(local_minimums)
     return local_minimums
 
 def export_to_csv(complete_table: dict, dataset_name: str) -> None:
@@ -286,21 +284,20 @@ def hamming_distance(x, y):
     return sum(el1 != el2 for el1, el2 in zip(x, y))
 
 if __name__ == "__main__":
-    
     # Load complete table csv
     glass_complete_table = csv_to_dict("outputs/glass_complete_table.csv")
     wine_complete_table = csv_to_dict("outputs/wine_complete_table.csv")
     magic_complete_table = csv_to_dict("outputs/magic_complete_table.csv")
     
-    # print(glass_complete_table)
-    visualization_2d(glass_complete_table, "glass")
-    hinged_bitstring_map(glass_complete_table, "glass")
+    # # print(glass_complete_table)
+    # visualization_2d(glass_complete_table, "glass")
+    # hinged_bitstring_map(glass_complete_table, "glass")
     
-    visualization_2d(wine_complete_table, "wine")
-    hinged_bitstring_map(wine_complete_table, "wine")
+    # visualization_2d(wine_complete_table, "wine")
+    # hinged_bitstring_map(wine_complete_table, "wine")
     
-    visualization_2d(magic_complete_table, "magic")
-    hinged_bitstring_map(magic_complete_table, "magic")
+    # visualization_2d(magic_complete_table, "magic")
+    # hinged_bitstring_map(magic_complete_table, "magic")
     
     
     

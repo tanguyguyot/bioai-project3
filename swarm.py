@@ -63,7 +63,7 @@ def update_particle(particle: Particle) -> Particle:
     particle.position = (rand < probs).astype(int)
     return particle
     
-def particle_swarm_optimization(lookup_table: dict, num_particles: int = 50, num_iterations: int = 50, b: float = 1.5, c: float = 1.5, verbose=False) -> str:
+def particle_swarm_optimization(lookup_table: dict, num_particles: int = 50, num_iterations: int = 50, b: float = 1.5, c: float = 1.5, verbose=False) -> tuple:
     """
     Perform Particle Swarm Optimization.
     """
@@ -98,9 +98,10 @@ def particle_swarm_optimization(lookup_table: dict, num_particles: int = 50, num
             update_particle(particle)
         if generation % 10 == 0 and verbose:
             print(f"Gen {generation}, best fitness = {global_best_fitness}")
-    print("Final best fitness: ", global_best_fitness)
-    print("Final best position: ", global_best_position)
-    return global_best_position, global_best_fitness
+    if verbose:
+        print("Final best fitness: ", global_best_fitness)
+        print("Final best position: ", "".join(global_best_position.astype(str)))
+    return ("".join(global_best_position.astype(str)), global_best_fitness)
 
 if __name__ == '__main__':
     # Dataset features amount : glass = 9, wine = 13, magic = 10
