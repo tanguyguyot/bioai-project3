@@ -281,42 +281,40 @@ if __name__ == "__main__":
     zoo_lookup_dict = csv_to_dict("outputs/zoo_complete_table.csv")
     letters_lookup_dict = csv_to_dict("outputs/letters_complete_table.csv")
     
-    # # wine
-    # ranks, fronts, population = genetic_algorithm("wine", wine_table, population_size=50, generations=50,  mutation_rate=0.05)
+    # wine
+    ranks, fronts, population = genetic_algorithm("wine", wine_table, population_size=50, generations=50,  mutation_rate=0.05)
+    plot_fronts(population, fronts, wine_table, "wine")
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, wine_table, "wine")
     
-    # plot_fronts(population, fronts, wine_table, "wine")
-    # pareto_front = [population[i] for i in fronts[0]]
-    # plot_population(pareto_front, population, wine_table, "wine")
+    # glass
+    ranks, fronts, population = genetic_algorithm("glass", glass_table, population_size=50, generations=50,  mutation_rate=0.05)
+    plot_fronts(population, fronts, glass_table, "glass")
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, glass_table, "glass")
     
-    # # glass
-    # ranks, fronts, population = genetic_algorithm("glass", glass_table, population_size=50, generations=50,  mutation_rate=0.05)
-    # plot_fronts(population, fronts, glass_table, "glass")
-    # pareto_front = [population[i] for i in fronts[0]]
-    # plot_population(pareto_front, population, glass_table, "glass")
-    
-    # #magic
-    # ranks, fronts, population = genetic_algorithm("magic", magic_table, population_size=50, generations=50,  mutation_rate=0.05)
-    # plot_fronts(population, fronts, magic_table, "magic")
-    # pareto_front = [population[i] for i in fronts[0]]
-    # plot_population(pareto_front, population, magic_table, "magic")
+    #magic
+    ranks, fronts, population = genetic_algorithm("magic", magic_table, population_size=50, generations=50,  mutation_rate=0.05)
+    plot_fronts(population, fronts, magic_table, "magic")
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, magic_table, "magic")
     
     # # heart
     ranks, fronts, population = genetic_algorithm("heart", heart_lookup_dict, population_size=50, generations=50,  mutation_rate=0.05)
-    # plot_fronts(population, fronts, heart_lookup_dict, "heart")
+    plot_fronts(population, fronts, heart_lookup_dict, "heart")
     pareto_front = [population[i] for i in fronts[0]]
     print(population[np.argmin([heart_lookup_dict.get(ind, np.inf).get("Lookup value", np.inf) for ind in population])])
-    # plot_population(pareto_front, population, heart_lookup_dict, "heart")
+    plot_population(pareto_front, population, heart_lookup_dict, "heart")
     
     
-    # # zoo
-    # ranks, fronts, population = genetic_algorithm("zoo", zoo_lookup_dict, population_size=100, generations=100,  mutation_rate=0.05)
-    # plot_fronts(population, fronts, zoo_lookup_dict, "zoo")
-    # pareto_front = [population[i] for i in fronts[0]]
-    # plot_population(pareto_front, population, zoo_lookup_dict, "zoo")
+    # zoo
+    ranks, fronts, population = genetic_algorithm("zoo", zoo_lookup_dict, population_size=100, generations=100,  mutation_rate=0.05)
+    plot_fronts(population, fronts, zoo_lookup_dict, "zoo")
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, zoo_lookup_dict, "zoo")
     
     # letters
-    # ranks, fronts, population = genetic_algorithm("letters", letters_lookup_dict, population_size=100, generations=100,  mutation_rate=0.05)
-    # # plot_fronts(population, fronts, letters_lookup_dict, "letters")
-    # print(fronts[0])
-    # pareto_front = [population[i] for i in fronts[0]]
-    # plot_population(pareto_front, population, letters_lookup_dict, "letters")
+    ranks, fronts, population = genetic_algorithm("letters", letters_lookup_dict, population_size=100, generations=100,  mutation_rate=0.05)
+    plot_fronts(population, fronts, letters_lookup_dict, "letters")
+    pareto_front = [population[i] for i in fronts[0]]
+    plot_population(pareto_front, population, letters_lookup_dict, "letters")

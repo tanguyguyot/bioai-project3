@@ -285,9 +285,9 @@ def hamming_distance(x, y):
 
 if __name__ == "__main__":
     # Load complete table csv
-    glass_complete_table = csv_to_dict("outputs/glass_complete_table.csv")
-    wine_complete_table = csv_to_dict("outputs/wine_complete_table.csv")
-    magic_complete_table = csv_to_dict("outputs/magic_complete_table.csv")
+    # glass_complete_table = csv_to_dict("outputs/glass_complete_table.csv")
+    # wine_complete_table = csv_to_dict("outputs/wine_complete_table.csv")
+    # magic_complete_table = csv_to_dict("outputs/magic_complete_table.csv")
     
     # # print(glass_complete_table)
     # visualization_2d(glass_complete_table, "glass")
@@ -299,6 +299,11 @@ if __name__ == "__main__":
     # visualization_2d(magic_complete_table, "magic")
     # hinged_bitstring_map(magic_complete_table, "magic")
     
+    # heart
+    print(hamming_distance("1110111010110", "1010100110111"))
     
+    # zoo
+    print(hamming_distance("0000000100000010","1000000001011100"))
+    print(hamming_distance("0000000100000010", "0001000001011100"))
     
     
