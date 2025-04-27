@@ -30,7 +30,7 @@ def fitness(individual: np.array, lookup_table: dict) -> int:
     Calculate the fitness of an individual based on the lookup table.
     """
     bitstring = ''.join(str(int(gene)) for gene in individual)
-    fitness_value = lookup_table.get(bitstring, np.inf).get("Error", np.inf)
+    fitness_value = lookup_table.get(bitstring, np.inf).get("Lookup value", np.inf)
     return fitness_value
 
 def get_velocity(particle: Particle, inertia: float, b: float, c: float, global_best: np.array, Vmax: float=4.0) -> list:

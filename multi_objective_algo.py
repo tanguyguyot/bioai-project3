@@ -304,7 +304,9 @@ if __name__ == "__main__":
     ranks, fronts, population = genetic_algorithm("heart", heart_lookup_dict, population_size=50, generations=50,  mutation_rate=0.05)
     # plot_fronts(population, fronts, heart_lookup_dict, "heart")
     pareto_front = [population[i] for i in fronts[0]]
-    plot_population(pareto_front, population, heart_lookup_dict, "heart")
+    print(population[np.argmin([heart_lookup_dict.get(ind, np.inf).get("Lookup value", np.inf) for ind in population])])
+    # plot_population(pareto_front, population, heart_lookup_dict, "heart")
+    
     
     # # zoo
     # ranks, fronts, population = genetic_algorithm("zoo", zoo_lookup_dict, population_size=100, generations=100,  mutation_rate=0.05)
