@@ -284,6 +284,7 @@ def hamming_distance(x, y):
     return sum(el1 != el2 for el1, el2 in zip(x, y))
 
 if __name__ == "__main__":
+    pass
     # Load complete table csv
     # glass_complete_table = csv_to_dict("outputs/glass_complete_table.csv")
     # wine_complete_table = csv_to_dict("outputs/wine_complete_table.csv")
@@ -300,10 +301,7 @@ if __name__ == "__main__":
     # hinged_bitstring_map(magic_complete_table, "magic")
     
     # heart
-    print(hamming_distance("1110111010110", "1010100110111"))
     
     # zoo
-    print(hamming_distance("0000000100000010","1000000001011100"))
-    print(hamming_distance("0000000100000010", "0001000001011100"))
     
     
