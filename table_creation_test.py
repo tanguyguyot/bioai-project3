@@ -182,12 +182,12 @@ def visualization_2d(complete_table: dict, dataset_name: str) -> None:
     
     plt.plot(X[ind], y[ind], color='gray', linewidth=0.5, alpha=0.8)
     plt.scatter(X, y, alpha=0.5, color="green", s=10)
-    plt.scatter(X_locals, y_locals, label='Local optimums', facecolors='none', edgecolors='blue')
+    plt.scatter(X_locals, y_locals, label=f'Local optimums ({len(X_locals)})', facecolors='none', edgecolors='blue')
     plt.scatter(X_locals[0], y_locals[0], label=f"Global minimum: {y_locals[0]:.4f}", facecolors='none', edgecolors='red')
 
     
     # Labels
-    plt.title(f"Scatter plot of Lookup value vs Binary representation for {dataset_name}")
+    plt.title(f"2D visualization of {dataset_name}")
     plt.xlabel("Binary representation (as int)")
     plt.ylabel("Lookup value")
     plt.grid()
@@ -256,7 +256,7 @@ def hinged_bitstring_map(complete_table: dict, dataset_name: str) -> None:
     y_locals = np.append(y_locals, int(global_minimum[0][half_length:], 2))
 
     # Marquer les minima
-    ax.scatter(X_locals, y_locals, label='Local optimums', facecolors='none', edgecolors='blue')
+    ax.scatter(X_locals, y_locals, label=f'Local optimums ({len(X_locals)})', facecolors='none', edgecolors='blue')
     ax.scatter(X_locals[-1], y_locals[-1], label=f"Global minimum: {global_minimum[2]:.4f}", 
             s=50, facecolors='none', edgecolors='red')
 
