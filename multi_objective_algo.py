@@ -169,13 +169,13 @@ def selection(objectives: list, fronts: list, amount: int) -> list:
             break
     return selected
 
-def genetic_algorithm(name: str, lookup_dict: dict, population_size: int = 100, generations: int = 100, mutation_rate: float = 0.01, save=False) -> list:
+def genetic_algorithm(name: str, lookup_dict: dict, population_size: int = 100, generations: int = 100, mutation_rate: float = 0.01, save=False, verbose=False) -> list:
     features_amount = len(next(iter(lookup_dict.keys())))
     population = [generate_individual(features_amount) for _ in range(population_size)]
     objectives = [(function1(individual, lookup_dict), function2(individual)) for individual in population]
     ranks, fronts = fast_non_dominated_sort(objectives)
     
-    for generation in tqdm(range(generations)):
+    for _ in tqdm(range(generations)):
         new_population = population.copy()
         assert len(new_population) == population_size
         for _ in range(len(population) // 2):
@@ -209,15 +209,16 @@ def genetic_algorithm(name: str, lookup_dict: dict, population_size: int = 100, 
             f.close()
     
     # diagnostic
-    unique = set(population)
-    print(f"Nombre d'individus uniques à la fin : {len(unique)}")
-    print(f"Nombre de fronts : {len(fronts)}")
-    print(f"Taille du premier front : {len(fronts[0])}")
+    if verbose:
+        unique = set(population)
+        print(f"Nombre d'individus uniques à la fin : {len(unique)}")
+        print(f"Nombre de fronts : {len(fronts)}")
+        print(f"Taille du premier front : {len(fronts[0])}")
     return ranks, fronts, population
 
 def plot_population(front: list, population: list, lookup_dict: dict, name: str) -> None:
     """
-    Plot the population in the objective space.
+    Plot the population in the objective space. Not really useful in practice in the end as there is only one front remaining
     """
     plt.close()
     f1_pop = [function1(individual, lookup_dict) for individual in population]
@@ -235,23 +236,23 @@ def plot_population(front: list, population: list, lookup_dict: dict, name: str)
     plt.savefig(f"outputs/plots/nsga2/{name}_nsga2_final_population.png")
     plt.close()
     
-def plot_generations(generations: list, lookup_dict: dict, name: str) -> None:
-    """
-    Plot the generations in the objective space.
-    """
-    plt.close()
-    for i, generation in enumerate(generations):
-        f1 = [function1(individual, lookup_dict) for individual in generation]
-        f2 = [function2(individual) for individual in generation]
-        plt.scatter(f1, f2, label=f"Generation {i}")
+# def plot_generations(generations: list, lookup_dict: dict, name: str) -> None:
+#     """
+#     Plot the generations in the objective space. Deprecated
+#     """
+#     plt.close()
+#     for i, generation in enumerate(generations):
+#         f1 = [function1(individual, lookup_dict) for individual in generation]
+#         f2 = [function2(individual) for individual in generation]
+#         plt.scatter(f1, f2, label=f"Generation {i}")
     
-    plt.xlabel("Function 1")
-    plt.ylabel("Function 2")
-    plt.title("Generations in Objective Space")
-    plt.legend()
-    plt.show()
-    plt.savefig(f"outputs/plots/nsga2/{name}_nsga2_generations.png")
-    plt.close()
+#     plt.xlabel("Function 1")
+#     plt.ylabel("Function 2")
+#     plt.title("Generations in Objective Space")
+#     plt.legend()
+#     plt.show()
+#     plt.savefig(f"outputs/plots/nsga2/{name}_nsga2_generations.png")
+#     plt.close()
 
 def plot_fronts(population: list, fronts: list, lookup_dict: dict, name: str) -> None:
     """
@@ -272,17 +273,17 @@ def plot_fronts(population: list, fronts: list, lookup_dict: dict, name: str) ->
     plt.close()
 
 if __name__ == "__main__":
-    # Dataset features amount : glass = 9, wine = 13, magic = 10
-    wine_table = csv_to_dict("outputs/wine_complete_table.csv")
-    glass_table = csv_to_dict("outputs/glass_complete_table.csv")
-    magic_table = csv_to_dict("outputs/magic_complete_table.csv")
-    heart_lookup_dict = csv_to_dict("outputs/heart_diseases_complete_table.csv")
-    zoo_lookup_dict = csv_to_dict("outputs/zoo_complete_table.csv")
-    letters_lookup_dict = csv_to_dict("outputs/letters_complete_table.csv")
+    pass
+    # # Dataset features amount : glass = 9, wine = 13, magic = 10
+    # wine_table = csv_to_dict("outputs/wine_complete_table.csv")
+    # glass_table = csv_to_dict("outputs/glass_complete_table.csv")
+    # magic_table = csv_to_dict("outputs/magic_complete_table.csv")
+    # heart_lookup_dict = csv_to_dict("outputs/heart_diseases_complete_table.csv")
+    # zoo_lookup_dict = csv_to_dict("outputs/zoo_complete_table.csv")
+    # letters_lookup_dict = csv_to_dict("outputs/letters_complete_table.csv")
     
     # # wine
     # ranks, fronts, population = genetic_algorithm("wine", wine_table, population_size=50, generations=50,  mutation_rate=0.05)
-    
     # plot_fronts(population, fronts, wine_table, "wine")
     # pareto_front = [population[i] for i in fronts[0]]
     # plot_population(pareto_front, population, wine_table, "wine")
@@ -299,11 +300,13 @@ if __name__ == "__main__":
     # pareto_front = [population[i] for i in fronts[0]]
     # plot_population(pareto_front, population, magic_table, "magic")
     
-    # # heart
-    ranks, fronts, population = genetic_algorithm("heart", heart_lookup_dict, population_size=50, generations=50,  mutation_rate=0.05)
+    # # # heart
+    # ranks, fronts, population = genetic_algorithm("heart", heart_lookup_dict, population_size=50, generations=50,  mutation_rate=0.05)
     # plot_fronts(population, fronts, heart_lookup_dict, "heart")
-    pareto_front = [population[i] for i in fronts[0]]
-    plot_population(pareto_front, population, heart_lookup_dict, "heart")
+    # pareto_front = [population[i] for i in fronts[0]]
+    # print(population[np.argmin([heart_lookup_dict.get(ind, np.inf).get("Lookup value", np.inf) for ind in population])])
+    # plot_population(pareto_front, population, heart_lookup_dict, "heart")
+    
     
     # # zoo
     # ranks, fronts, population = genetic_algorithm("zoo", zoo_lookup_dict, population_size=100, generations=100,  mutation_rate=0.05)
@@ -311,9 +314,8 @@ if __name__ == "__main__":
     # pareto_front = [population[i] for i in fronts[0]]
     # plot_population(pareto_front, population, zoo_lookup_dict, "zoo")
     
-    # letters
+    # # letters
     # ranks, fronts, population = genetic_algorithm("letters", letters_lookup_dict, population_size=100, generations=100,  mutation_rate=0.05)
-    # # plot_fronts(population, fronts, letters_lookup_dict, "letters")
-    # print(fronts[0])
+    # plot_fronts(population, fronts, letters_lookup_dict, "letters")
     # pareto_front = [population[i] for i in fronts[0]]
     # plot_population(pareto_front, population, letters_lookup_dict, "letters")
